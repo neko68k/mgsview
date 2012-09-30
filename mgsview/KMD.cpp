@@ -7,25 +7,25 @@
 #include "OBJExport.h"
 
 //#define SCALE_FCT 65535.0f
-#define SCALE_FCT 5535.0f
+#define SCALE_FCT 256.0f
 
 typedef struct
 {
 	// will have to work on this :D
 	DWORD numBlocks;
-	BYTE unk[0x1C];
+	DWORD unkNum;
+	DWORD boundingBox[6];
 }KMD_HDR;
 
 typedef struct
 {
-	DWORD unk1;
+	WORD  numObj;
+	WORD  numUnk;
 	DWORD numFaces;
-	DWORD unk5[3]; // i think these are translation values
-	DWORD unk2; //|
-	DWORD unk4;	//|> not sure, seem related?
-	DWORD unk3; //|
-	DWORD nullpad1[3];		
-	DWORD packetend[2]; 	// marks end of packet
+	WORD boundingBox[6]; 
+	DWORD translation[3]; 
+	DWORD parentObjIndex;
+	DWORD translationUnk;
 
 	// mesh verts
 	DWORD numVerts;
@@ -33,15 +33,14 @@ typedef struct
 	DWORD indexOfs;
 
 	// these are not part of the mesh, unknown
-	DWORD numVerts2;
-	DWORD vertOfs2;
-	DWORD indexOfs2;
+	DWORD numNorms;
+	DWORD normOfs;
+	DWORD normIndex;
 
-	// unknown
-	DWORD unkOfs1;	// uv coords
-	DWORD unkOfs2;	
+	DWORD ofsUV;	// uv coords
+	DWORD ofsUnk;	
 
-	DWORD nullpad2;
+	DWORD nullpad;
 }KMD_VERT_HDR;
 
 /*typedef struct
