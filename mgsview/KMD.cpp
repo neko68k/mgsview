@@ -59,6 +59,109 @@ BYTE *facePtr = NULL;
 KMD_HDR *header = NULL;
 DWORD numBlocks = 0;
 
+void KMD_ProcessTexCoords(DWORD *ofsUV, DWORD *ofsUnk){
+	DWORD *PacketDest;
+	DWORD *s2;
+	DWORD *SourceUV;
+	DWORD lo;
+
+	DWORD DMAStreamBase = 0;
+	
+	DWORD TempDest = *ofsUnk;
+	DWORD a0 = TempDest&0xFFFF;
+	ofsUnk++;
+
+	DWORD TempDest = s2[0xA];
+	DWORD v1 = *ofsUV;
+	DWORD a1 = TempDest + 1;
+	DWORD a0 = s2[8];
+	TempDest = s2[0xB];
+	DWORD a3 = s2[9];
+	
+	
+	v1 = v1*a1&0xFFFF;
+	DWORD a2 = TempDest+1;
+	if(v1<0)
+		v1+=0xFF;
+	TempDest = v1 >> 8;
+	TempDest += a0;
+	PacketDest[-2] = TempDest;	// U1
+
+
+	TempDest = SourceUV[-4];
+	TempDest = TempDest*a2&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a3;
+	PacketDest[-1] = TempDest;	//V1
+
+
+	TempDest = SourceUV[-3];
+	TempDest = TempDest*a1&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a0;
+	PacketDest[0xA] = TempDest;	//U2
+
+
+	TempDest = SourceUV[-2];
+	TempDest = TempDest*a2&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a3;
+	PacketDest[0xB] = TempDest;	//V2
+
+
+	TempDest = SourceUV[1];
+	TempDest = TempDest*a1&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a0;
+	PacketDest[0x16] = TempDest;	//U3
+
+
+	TempDest = SourceUV[2];
+	TempDest = TempDest*a2&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a3;
+	PacketDest[0x17] = TempDest;	//V3
+
+
+	TempDest = SourceUV[-1];
+	TempDest = TempDest*a1&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;
+	TempDest>>=8;
+	TempDest+=a0;
+	PacketDest[0x22] = TempDest;	//U4
+	
+	
+	TempDest = SourceUV[0];
+	TempDest = TempDest*a2&0xFFFF;
+	if(TempDest<0)
+		TempDest+=0xFF;	
+	TempDest>>=8;
+	TempDest+=a3;
+	PacketDest[0x23] = TempDest;	//V4
+
+
+	DMAStreamBase += 0x34;
+	SourceUV += 8;
+
+	TempDest=s2[4];
+	ofsUV+=8;
+	PacketDest[0xC] = TempDest;	//TexPage
+	TempDest = s2[6];
+	PacketDest+=0x34;
+	
+}
+
 void KMD_Load(char *fn)
 {
 	DWORD filesize = 0;
