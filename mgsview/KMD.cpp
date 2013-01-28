@@ -162,6 +162,44 @@ void KMD_ProcessTexCoords(DWORD *ofsUV, DWORD *ofsUnk){
 	
 }
 
+void MGS_GetGfxLookupOffset(WORD ofsUnkData){
+	WORD ofsUnkDataSignFixed=ofsUnkData;
+	if(ofsUnkData<0)
+		ofsUnkDataSignFixed = ofsUnkData+0x1FF;
+
+	a3=ofsUnkDataSignFixed>>9;
+	ofsUnkDataSignFixed=a3<<9;
+	a3=ofsUnkData-ofsUnkDataSignFixed;
+	ofsUnkDataSignFixed=a3<<1;
+	ofsUnkDataSignFixed+=a3;
+	ofsUnkDataSignFixed<<2;
+	v1=0x800B46C8;
+	ofsUnkDataSignFixed+=v1;
+	a2=a3;
+
+	while(a2==a3){
+		v1 = ofsUnkDataSignFixed[0];		
+		if(v1!=0){
+			a1[0] = ofsUnkDataSignFixed;
+			if(v1!=ofsUnkData)
+				ofsUnkDataSignFixed = 1;
+			return;
+		}
+		a2+=1;
+		ofsUnkDataSignFixed+=0xC;
+		if(a2==t0){
+			ofsUnkDataSignFixed = 0x800B46C8;
+			a2 = 0;
+		}
+	}
+	a1[0]=0;
+}
+
+void AddressLookup(WORD ofsUnkData){
+	MGS_GetGfxLookupOffset(ofsUnkData);
+
+}
+
 void KMD_Load(char *fn)
 {
 	DWORD filesize = 0;
